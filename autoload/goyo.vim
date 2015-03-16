@@ -165,7 +165,7 @@ endfunction
 function! s:goyo_on(width)
   let s:orig_tab = tabpagenr()
   let settings =
-    \ { "'laststatus':    &laststatus,
+    \ {
     \   'showtabline':   &showtabline,
     \   'fillchars':     &fillchars,
     \   'winminwidth':   &winminwidth,
