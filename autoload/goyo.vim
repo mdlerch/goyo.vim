@@ -86,16 +86,20 @@ endfunction
 
 function! s:resize_pads()
   let t:goyo_width         = max([2, t:goyo_width])
-  let t:goyo_margin_top    = min([max([2, t:goyo_margin_top]),    &lines / 2 - 1])
-  let t:goyo_margin_bottom = min([max([2, t:goyo_margin_bottom]), &lines / 2 - 1])
+  " let t:goyo_margin_top    = min([max([2, t:goyo_margin_top]),    &lines / 2 - 1])
+  " let t:goyo_margin_bottom = min([max([2, t:goyo_margin_bottom]), &lines / 2 - 1])
 
   let hmargin = s:hmargin()
 
   augroup goyop
     autocmd!
   augroup END
-  call s:setup_pad(t:goyo_pads.t, 0, t:goyo_margin_top - 1, 'j')
-  call s:setup_pad(t:goyo_pads.b, 0, t:goyo_margin_bottom - 2, 'k')
+  if t:goyo_margin_top > 2
+      call s:setup_pad(t:goyo_pads.t, 0, t:goyo_margin_top - 1, 'j')
+  endif
+  if t:goyo_margin_bottom > 2
+      call s:setup_pad(t:goyo_pads.b, 0, t:goyo_margin_bottom - 2, 'k')
+  endif
   call s:setup_pad(t:goyo_pads.l, 1, hmargin / 2 - 1, 'l')
   call s:setup_pad(t:goyo_pads.r, 1, hmargin / 2 - 1, 'h')
 
@@ -161,7 +165,7 @@ endfunction
 function! s:goyo_on(width)
   let s:orig_tab = tabpagenr()
   let settings =
-    \ { 'laststatus':    &laststatus,
+    \ { "'laststatus':    &laststatus,
     \   'showtabline':   &showtabline,
     \   'fillchars':     &fillchars,
     \   'winminwidth':   &winminwidth,
@@ -227,7 +231,7 @@ function! s:goyo_on(width)
   set winminheight=1
   set winheight=1
   set winminwidth=1 winwidth=1
-  set laststatus=0
+  " set laststatus=0
   set showtabline=0
   set noruler
   set fillchars+=vert:\ 
@@ -244,8 +248,12 @@ function! s:goyo_on(width)
 
   let t:goyo_pads.l = s:init_pad('vertical topleft new')
   let t:goyo_pads.r = s:init_pad('vertical botright new')
-  let t:goyo_pads.t = s:init_pad('topleft new')
-  let t:goyo_pads.b = s:init_pad('botright new')
+  if t:goyo_margin_top > 2
+      let t:goyo_pads.t = s:init_pad('topleft new')
+  endif
+  if t:goyo_margin_bottom > 2
+      let t:goyo_pads.b = s:init_pad('botright new')
+  endif
 
   call s:resize_pads()
   call s:tranquilize()
@@ -255,11 +263,11 @@ function! s:goyo_on(width)
     autocmd TabLeave    *        call s:goyo_off()
     autocmd VimResized  *        call s:resize_pads()
     autocmd ColorScheme *        call s:tranquilize()
-    autocmd BufWinEnter *        call s:hide_linenr() | call s:hide_statusline()
-    autocmd WinEnter,WinLeave *  call s:hide_statusline()
+    autocmd BufWinEnter *        call s:hide_linenr()
+    " autocmd BufWinEnter *        call s:hide_linenr() | call s:hide_statusline()
+    " autocmd WinEnter,WinLeave *  call s:hide_statusline()
   augroup END
 
-  call s:hide_statusline()
   if exists('g:goyo_callbacks[0]')
     call g:goyo_callbacks[0]()
   endif
